@@ -21,193 +21,553 @@ class TemplateType(Enum):
 
 
 class PromptTemplates:
-    """Collection of reusable prompt templates for different strategies."""
+    """Collection of research-backed prompt templates for different reasoning strategies.
+    
+    Based on latest research in Chain-of-Thought, Tree-of-Thoughts, Self-Ask, 
+    Reflexion, and MCTS approaches for enhancing small model performance.
+    """
 
-    # System prompts for different reasoning strategies
+    # Research-backed system prompts with proven patterns
     SYSTEM_PROMPTS = {
         ReasoningStrategy.CHAIN_OF_THOUGHT: """
-You are an expert reasoning assistant that excels at breaking down complex problems into clear, logical steps. 
+You are an expert reasoning assistant trained in systematic step-by-step analysis.
 
-Your approach:
-1. Carefully analyze the problem to understand what's being asked
-2. Break down complex problems into manageable steps
-3. Show your thinking process clearly at each step
-4. Build toward the final answer systematically
-5. Double-check your reasoning and calculations
+RESEARCH FOUNDATION:
+- Chain-of-Thought reasoning improves accuracy by 17.9% on mathematical problems
+- Self-consistency across multiple reasoning paths increases reliability
+- Explicit step verification reduces error propagation
 
-Always think step-by-step and show your work. Be thorough but concise.
+YOUR METHODOLOGY:
+1. ANALYZE: Break down what's being asked into core components
+2. PLAN: Outline your step-by-step approach before executing
+3. EXECUTE: Work through each step with clear logical connections
+4. VERIFY: Check each step and the final answer for correctness
+5. REFLECT: Consider if there are alternative approaches or potential errors
+
+FOR EACH STEP:
+- State what you're doing and why
+- Show all work and calculations
+- Verify the step makes logical sense
+- Connect to the overall solution path
+
+Be systematic, thorough, and always show your reasoning process.
         """.strip(),
 
         ReasoningStrategy.TREE_OF_THOUGHTS: """
-You are an expert reasoning assistant that explores multiple solution approaches before settling on the best path.
+You are an expert reasoning assistant using deliberative search methodology.
 
-Your approach:
-1. Generate several different approaches to the problem
-2. Evaluate the pros and cons of each approach
-3. Choose the most promising path forward
-4. Execute that approach while remaining open to switching if needed
-5. Backtrack and try alternative approaches if you hit dead ends
+RESEARCH FOUNDATION:
+- Tree-of-Thoughts increased GPT-4's puzzle-solving from 4% to 74% success rate
+- Multiple path exploration prevents getting stuck in local optima
+- Strategic backtracking and path evaluation are crucial for complex problems
 
-Think divergently first, then convergently. Explore before you exploit.
+YOUR METHODOLOGY:
+1. DIVERGE: Generate 3-5 distinct approaches to the problem
+2. EVALUATE: Assess each approach's strengths, weaknesses, and feasibility
+3. EXPAND: Develop the most promising approach(es) further
+4. ASSESS: Continuously evaluate partial solutions and dead ends
+5. BACKTRACK: Return to alternatives if current path fails
+6. CONVERGE: Synthesize insights from multiple paths into final solution
+
+FOR EACH APPROACH:
+- Clearly state the reasoning strategy
+- Identify potential strengths and limitations
+- Execute 2-3 steps to test viability
+- Compare with alternative approaches
+- Be willing to switch or combine approaches
+
+Think like a chess master: explore multiple moves ahead, evaluate positions, choose optimal paths.
         """.strip(),
 
         ReasoningStrategy.MONTE_CARLO_TREE_SEARCH: """
-You are an expert reasoning assistant that systematically explores solution spaces using structured search.
+You are an expert reasoning assistant using systematic search methodology.
 
-Your approach:
-1. Model the problem as a tree of possible reasoning steps
-2. Systematically explore promising branches
-3. Evaluate the quality of partial solutions
-4. Use insights from exploration to guide deeper search
-5. Build toward complete solutions through iterative refinement
+RESEARCH FOUNDATION:
+- MCTS with small models achieved 53% on AIME math (top 20% human performance)
+- Systematic exploration with quality evaluation enables breakthrough performance
+- Process Preference Models guide search toward promising directions
 
-Be systematic and methodical. Use structured exploration to find optimal solutions.
+YOUR METHODOLOGY:
+1. MODEL: Represent the problem as a search tree of reasoning steps
+2. EXPLORE: Systematically investigate promising branches
+3. EVALUATE: Assess quality of partial solutions at each node
+4. EXPAND: Develop high-potential paths deeper
+5. BACKTRACK: Learn from dead ends and apply insights to other branches
+6. OPTIMIZE: Use accumulated knowledge to guide future search
+
+FOR EACH SEARCH STEP:
+- State current position in the solution space
+- Evaluate quality of current partial solution
+- Identify next promising directions to explore
+- Learn from failures to improve future choices
+- Build toward complete, verified solutions
+
+Be methodical like a research scientist: hypothesize, test, learn, iterate.
         """.strip(),
 
         ReasoningStrategy.SELF_ASK: """
-You are an expert reasoning assistant that breaks down complex questions into simpler sub-questions.
+You are an expert reasoning assistant using question decomposition methodology.
 
-Your approach:
-1. Analyze the main question to identify what information is needed
-2. Break it down into specific, answerable sub-questions
-3. Answer each sub-question systematically
-4. Use the answers to build toward the final solution
-5. Verify that all necessary sub-questions have been addressed
+RESEARCH FOUNDATION:
+- Self-Ask breaks complex questions into manageable sub-questions
+- Systematic question decomposition prevents missing critical information
+- Follow-up questions enable deeper understanding and verification
 
-Ask good questions, then answer them thoroughly. Build up from simple to complex.
+YOUR METHODOLOGY:
+1. DECOMPOSE: Break the main question into specific, answerable sub-questions
+2. PRIORITIZE: Order sub-questions by dependency and importance
+3. INVESTIGATE: Answer each sub-question thoroughly with evidence
+4. CONNECT: Link sub-answers to build toward the main solution
+5. VERIFY: Ensure all necessary information has been gathered
+6. SYNTHESIZE: Combine insights into a comprehensive final answer
+
+FOR EACH SUB-QUESTION:
+- Make it specific and directly answerable
+- Provide clear, evidence-based answers
+- Explain how it connects to the main question
+- Identify what additional questions arise
+- Verify the sub-answer is reliable
+
+FOLLOW-UP QUESTIONS TO CONSIDER:
+- "What additional information do I need?"
+- "How does this relate to other parts of the problem?"
+- "What assumptions am I making?"
+- "How can I verify this answer?"
+
+Be like an investigative journalist: ask probing questions, gather evidence, build the complete story.
         """.strip(),
 
         ReasoningStrategy.REFLEXION: """
-You are an expert reasoning assistant that learns from mistakes and continuously improves your approach.
+You are an expert reasoning assistant using iterative self-improvement methodology.
 
-Your approach:
-1. Attempt to solve the problem using your best current understanding
-2. Critically evaluate your reasoning and identify potential errors
-3. Reflect on what went wrong and why
-4. Develop improved strategies based on your reflection
-5. Apply these lessons to retry the problem with a better approach
+RESEARCH FOUNDATION:
+- Reflexion agents achieved 91% on coding tasks vs 80% for GPT-4 alone
+- Self-reflection and error analysis enable continuous improvement
+- Episodic memory of failures guides better future attempts
 
-Learn from failures, reflect on your process, and iterate toward better solutions.
+YOUR METHODOLOGY:
+1. ATTEMPT: Solve the problem using your current best understanding
+2. EVALUATE: Critically assess your solution for errors and gaps
+3. DIAGNOSE: Identify what went wrong and why
+4. LEARN: Extract general lessons from the failure
+5. STRATEGIZE: Develop improved approaches based on insights
+6. RETRY: Apply lessons to attempt the problem again
+
+FOR EACH ITERATION:
+- Document your reasoning process clearly
+- Identify specific errors or weaknesses
+- Analyze root causes of failures
+- Formulate better strategies based on lessons learned
+- Test new approaches against previous failures
+
+REFLECTION QUESTIONS:
+- "What assumptions did I make that were incorrect?"
+- "Where did my reasoning break down?"
+- "What information did I miss or misinterpret?"
+- "How can I avoid similar mistakes in the future?"
+- "What alternative approaches should I consider?"
+
+Be like a skilled craftsperson: learn from every mistake, refine your technique, achieve mastery through iteration.
         """.strip(),
     }
 
-    # Reasoning prompt templates
+    # Research-backed reasoning templates with proven structures
     REASONING_TEMPLATES = {
         ReasoningStrategy.CHAIN_OF_THOUGHT: """
-Let's work through this step by step:
+CHAIN-OF-THOUGHT REASONING:
 
 Problem: {problem}
 
-Step 1: {step_instruction}
-[Show your work here]
+PLANNING PHASE:
+• What am I trying to find?
+• What information do I have?
+• What steps will get me there?
 
-Step 2: [Continue step by step]
-[Show your work here]
+STEP-BY-STEP SOLUTION:
 
-Final Answer: [State your conclusion clearly]
+Step 1: [Clearly state what you're doing]
+   Work: [Show all calculations/reasoning]
+   Check: [Verify this step makes sense]
+
+Step 2: [Build on previous step]
+   Work: [Show all calculations/reasoning]
+   Check: [Verify this step makes sense]
+
+Step 3: [Continue systematically]
+   Work: [Show all calculations/reasoning]
+   Check: [Verify this step makes sense]
+
+FINAL VERIFICATION:
+• Does my answer make sense?
+• Can I verify it through substitution/alternative method?
+• Are the units/scale reasonable?
+
+Final Answer: [Clear, complete conclusion]
         """.strip(),
 
         ReasoningStrategy.TREE_OF_THOUGHTS: """
-Let's explore multiple approaches to this problem:
+TREE-OF-THOUGHTS EXPLORATION:
 
 Problem: {problem}
 
-Approach 1: {approach_1_description}
-- Pros: {approach_1_pros}
-- Cons: {approach_1_cons}
+DIVERGENT THINKING (Generate Multiple Approaches):
 
-Approach 2: {approach_2_description}
-- Pros: {approach_2_pros}  
-- Cons: {approach_2_cons}
+Approach A: [First strategy]
+   • Method: [How would this work?]
+   • Strengths: [What are the advantages?]
+   • Weaknesses: [What could go wrong?]
+   • Viability: [Rate 1-10 and explain]
 
-Approach 3: {approach_3_description}
-- Pros: {approach_3_pros}
-- Cons: {approach_3_cons}
+Approach B: [Second strategy]
+   • Method: [How would this work?]
+   • Strengths: [What are the advantages?]
+   • Weaknesses: [What could go wrong?]
+   • Viability: [Rate 1-10 and explain]
 
-Selected Approach: [Choose the most promising approach and explain why]
+Approach C: [Third strategy]
+   • Method: [How would this work?]
+   • Strengths: [What are the advantages?]
+   • Weaknesses: [What could go wrong?]
+   • Viability: [Rate 1-10 and explain]
 
-Execution: [Work through the selected approach]
+CONVERGENT THINKING (Select and Execute):
+
+Selected Approach: [Choose best approach and explain why]
+
+Execution:
+[Work through selected approach step-by-step]
+[Monitor progress and be ready to backtrack if needed]
+[Consider insights from other approaches]
+
+Alternative Check: [If stuck, try second-best approach]
         """.strip(),
 
         ReasoningStrategy.SELF_ASK: """
-Let's break this down into sub-questions:
+SELF-ASK DECOMPOSITION:
 
 Main Question: {problem}
 
-Sub-question 1: {sub_question_1}
-Answer 1: [Answer the first sub-question]
+QUESTION DECOMPOSITION:
 
-Sub-question 2: {sub_question_2}
-Answer 2: [Answer the second sub-question]
+Sub-question 1: [What specific information do I need first?]
+Follow-up: [Any assumptions or clarifications needed?]
+Answer 1: [Provide evidence-based answer]
+Confidence: [How certain am I? What could be wrong?]
 
-Sub-question 3: {sub_question_3}
-Answer 3: [Answer the third sub-question]
+Sub-question 2: [What else do I need to know?]
+Follow-up: [How does this relate to sub-question 1?]
+Answer 2: [Provide evidence-based answer]
+Confidence: [How certain am I? What could be wrong?]
 
-Final Answer: [Synthesize the sub-answers to answer the main question]
+Sub-question 3: [What remaining information is needed?]
+Follow-up: [Are there any gaps or missing pieces?]
+Answer 3: [Provide evidence-based answer]
+Confidence: [How certain am I? What could be wrong?]
+
+INTEGRATION:
+• How do these sub-answers connect?
+• What patterns or relationships emerge?
+• Are there any contradictions to resolve?
+
+Final Answer: [Synthesize all sub-answers into complete solution]
+        """.strip(),
+
+        ReasoningStrategy.MONTE_CARLO_TREE_SEARCH: """
+MONTE CARLO TREE SEARCH:
+
+Problem: {problem}
+
+SEARCH TREE INITIALIZATION:
+Root State: [Current understanding/starting point]
+Goal State: [What constitutes a complete solution?]
+
+EXPLORATION PHASE:
+
+Branch 1: [First reasoning direction]
+   • Partial Solution: [What have we achieved?]
+   • Quality Score: [How promising is this path?]
+   • Next Steps: [What branches from here?]
+
+Branch 2: [Second reasoning direction]
+   • Partial Solution: [What have we achieved?]
+   • Quality Score: [How promising is this path?]
+   • Next Steps: [What branches from here?]
+
+Branch 3: [Third reasoning direction]
+   • Partial Solution: [What have we achieved?]
+   • Quality Score: [How promising is this path?]
+   • Next Steps: [What branches from here?]
+
+BEST PATH SELECTION:
+Most Promising: [Which branch shows highest potential?]
+Reasoning: [Why is this path superior?]
+
+DEEP EXPLORATION:
+[Develop the selected path further]
+[Evaluate each step and backtrack if needed]
+[Use insights from other branches]
+
+SOLUTION:
+[Present final answer with confidence assessment]
+        """.strip(),
+
+        ReasoningStrategy.REFLEXION: """
+REFLEXION METHODOLOGY:
+
+Problem: {problem}
+
+FIRST ATTEMPT:
+[Try to solve the problem with current understanding]
+
+SELF-EVALUATION:
+• What did I do well?
+• Where did I make errors?
+• What was I uncertain about?
+• What information was missing?
+
+ERROR ANALYSIS:
+• Root cause: [Why did the error occur?]
+• Pattern: [Is this a recurring mistake?]
+• Impact: [How did it affect the solution?]
+
+LESSONS LEARNED:
+• Strategy adjustment: [How should I modify my approach?]
+• Knowledge gap: [What do I need to learn/remember?]
+• Verification: [How can I catch this error in the future?]
+
+IMPROVED APPROACH:
+[Apply lessons learned to attempt problem again]
+[Monitor for previous errors]
+[Use new strategies and verification methods]
+
+FINAL REFLECTION:
+• How did the improved approach work?
+• What new insights emerged?
+• How can I apply this learning to future problems?
         """.strip(),
     }
 
-    # Tool usage templates
+    # Research-backed tool usage templates
     TOOL_TEMPLATES = {
         "python_execution": """
-I need to perform calculations or run code to solve this. Let me use Python:
+TOOL: Python Code Execution
 
+Reasoning: {reasoning}
+
+Code Strategy:
 ```python
-{code}
+# Step 1: {step_1_description}
+{step_1_code}
+
+# Step 2: {step_2_description}
+{step_2_code}
+
+# Step 3: {step_3_description}
+{step_3_code}
 ```
 
-The result is: {result}
+Execution Result: {result}
 
-This tells us: {interpretation}
+Verification:
+• Does the result make sense? {verification_1}
+• Can I check it another way? {verification_2}
+• Are there edge cases to consider? {verification_3}
+
+Interpretation: {interpretation}
         """.strip(),
 
         "search": """
-I need to look up information about "{query}". Let me search for this.
+TOOL: Information Search
 
-Search results indicate: {results}
+Search Query: "{query}"
+Reasoning: {search_reasoning}
 
-Based on this information: {conclusion}
+Results Analysis:
+• Source 1: {source_1}
+• Source 2: {source_2}
+• Source 3: {source_3}
+
+Information Quality:
+• Reliability: {reliability_assessment}
+• Completeness: {completeness_assessment}
+• Currency: {currency_assessment}
+
+Synthesis: {synthesis}
+
+Conclusion: {conclusion}
         """.strip(),
 
         "calculator": """
-Let me calculate: {expression}
+TOOL: Mathematical Calculator
 
+Expression: {expression}
+Setup: {setup_explanation}
+
+Calculation:
 {expression} = {result}
 
-Therefore: {interpretation}
+Verification:
+• Order of operations correct? {order_check}
+• Units consistent? {units_check}
+• Magnitude reasonable? {magnitude_check}
+
+Interpretation: {interpretation}
+        """.strip(),
+
+        "verifier": """
+TOOL: Solution Verifier
+
+Original Problem: {problem}
+Proposed Solution: {solution}
+
+Verification Tests:
+• Logical consistency: {logic_check}
+• Mathematical accuracy: {math_check}
+• Completeness: {completeness_check}
+• Edge cases: {edge_cases_check}
+
+Alternative Approaches:
+• Method 1: {alt_method_1}
+• Method 2: {alt_method_2}
+
+Cross-Validation: {cross_validation}
+
+Confidence Assessment: {confidence_score}/10
         """.strip(),
     }
 
-    # Reflection templates
+    # Research-backed reflection templates
     REFLECTION_TEMPLATES = {
         "error_analysis": """
-Let me reflect on what went wrong:
+ERROR ANALYSIS (Research-Based Self-Reflection):
 
-What I tried: {attempted_approach}
-What happened: {outcome}
-Why it failed: {error_analysis}
-What I learned: {lessons_learned}
-Better approach: {improved_strategy}
+Problem Context: {problem}
+
+FAILURE ANALYSIS:
+• What I attempted: {attempted_approach}
+• Where it broke down: {failure_point}
+• Type of error: {error_type} (conceptual/computational/logical/procedural)
+• Root cause: {root_cause}
+
+PATTERN RECOGNITION:
+• Have I made similar mistakes before? {pattern_check}
+• What triggers this error? {trigger_analysis}
+• How can I recognize this pattern early? {early_warning_signs}
+
+LESSONS LEARNED:
+• Conceptual insight: {conceptual_lesson}
+• Procedural improvement: {procedural_lesson}
+• Verification method: {verification_lesson}
+
+IMPROVED STRATEGY:
+• New approach: {improved_approach}
+• Safeguards: {safeguards}
+• Verification steps: {verification_steps}
+
+FUTURE APPLICATION:
+• Similar problems: {similar_problems}
+• General principle: {general_principle}
+• Memory cue: {memory_cue}
         """.strip(),
 
         "confidence_assessment": """
-Let me assess my confidence in this answer:
+CONFIDENCE ASSESSMENT (Multi-Dimensional Analysis):
 
-Answer: {answer}
-Reasoning quality: {reasoning_assessment}
-Evidence strength: {evidence_assessment}
-Potential weaknesses: {weaknesses}
-Overall confidence: {confidence_score}/10
+Solution: {answer}
+
+REASONING QUALITY:
+• Logical consistency: {logical_score}/10
+• Step completeness: {completeness_score}/10
+• Clarity of explanation: {clarity_score}/10
+
+EVIDENCE STRENGTH:
+• Factual accuracy: {accuracy_score}/10
+• Source reliability: {reliability_score}/10
+• Supporting calculations: {calculation_score}/10
+
+VULNERABILITY ANALYSIS:
+• Assumptions made: {assumptions}
+• Potential errors: {potential_errors}
+• Missing information: {missing_info}
+• Edge cases: {edge_cases}
+
+VERIFICATION ATTEMPTS:
+• Alternative method 1: {alt_verification_1}
+• Alternative method 2: {alt_verification_2}
+• Consistency check: {consistency_check}
+
+OVERALL CONFIDENCE:
+• Numerical score: {confidence_score}/10
+• Confidence level: {confidence_level} (High/Medium/Low)
+• Key uncertainties: {key_uncertainties}
+• Recommended actions: {recommended_actions}
         """.strip(),
 
         "approach_evaluation": """
-Let me evaluate my reasoning approach:
+APPROACH EVALUATION (Meta-Cognitive Analysis):
 
-Strategy used: {strategy}
-What worked well: {strengths}
-What could be improved: {areas_for_improvement}
-Alternative approaches: {alternatives}
-Next time I would: {future_improvements}
+Strategy Used: {strategy}
+Problem Type: {problem_type}
+
+EFFECTIVENESS ANALYSIS:
+• What worked well: {strengths}
+• What was challenging: {challenges}
+• Efficiency rating: {efficiency_score}/10
+• Accuracy rating: {accuracy_score}/10
+
+STRATEGY COMPARISON:
+• Alternative approach 1: {alt_approach_1}
+  - Pros: {alt_1_pros}
+  - Cons: {alt_1_cons}
+• Alternative approach 2: {alt_approach_2}
+  - Pros: {alt_2_pros}
+  - Cons: {alt_2_cons}
+
+CONTEXT SUITABILITY:
+• Problem types where this works well: {suitable_contexts}
+• Problem types where this struggles: {unsuitable_contexts}
+• Optimal conditions: {optimal_conditions}
+
+FUTURE OPTIMIZATION:
+• Immediate improvements: {immediate_improvements}
+• Long-term refinements: {long_term_refinements}
+• Skill development needs: {skill_development}
+
+STRATEGY ADAPTATION:
+• For similar problems: {similar_adaptations}
+• For different contexts: {context_adaptations}
+• For higher complexity: {complexity_adaptations}
+        """.strip(),
+
+        "meta_cognitive_reflection": """
+META-COGNITIVE REFLECTION (Learning from Reasoning Process):
+
+Reasoning Journey: {reasoning_summary}
+
+STRATEGIC AWARENESS:
+• Planning quality: {planning_quality}
+• Execution monitoring: {execution_monitoring}
+• Adjustment responsiveness: {adjustment_responsiveness}
+
+COGNITIVE LOAD MANAGEMENT:
+• Information organization: {info_organization}
+• Working memory usage: {working_memory}
+• External aid utilization: {external_aids}
+
+ERROR PREVENTION:
+• Common pitfalls avoided: {pitfalls_avoided}
+• Verification strategies used: {verification_strategies}
+• Quality control measures: {quality_control}
+
+LEARNING CONSOLIDATION:
+• New insights gained: {new_insights}
+• Skill improvements: {skill_improvements}
+• Knowledge gaps identified: {knowledge_gaps}
+
+TRANSFER POTENTIAL:
+• Generalizable principles: {generalizable_principles}
+• Similar problem types: {similar_problems}
+• Cross-domain applications: {cross_domain_applications}
         """.strip(),
     }
 
@@ -275,20 +635,48 @@ Confidence in conclusion: {confidence}
         current_problem: str,
         strategy: ReasoningStrategy = ReasoningStrategy.CHAIN_OF_THOUGHT
     ) -> str:
-        """Create a multi-shot prompt with examples."""
+        """Create sophisticated multi-shot prompt with pattern recognition."""
 
         prompt_parts = []
+        
+        # Add research-backed instruction
+        prompt_parts.append("MULTI-SHOT LEARNING FRAMEWORK:")
+        prompt_parts.append("Study these examples to identify reasoning patterns, then apply them to solve your problem.")
+        prompt_parts.append("")
 
-        # Add examples
+        # Add examples with pattern analysis
         for i, example in enumerate(examples, 1):
-            prompt_parts.append(f"Example {i}:")
+            prompt_parts.append(f"EXAMPLE {i}:")
             prompt_parts.append(f"Problem: {example.get('problem', 'N/A')}")
             prompt_parts.append(f"Solution: {example.get('solution', 'N/A')}")
+            
+            # Add pattern identification
+            if example.get('pattern'):
+                prompt_parts.append(f"Pattern: {example.get('pattern')}")
+            if example.get('key_insight'):
+                prompt_parts.append(f"Key Insight: {example.get('key_insight')}")
+            
             prompt_parts.append("")
 
-        # Add current problem
-        prompt_parts.append("Now solve this problem using the same approach:")
+        # Add pattern synthesis
+        prompt_parts.append("PATTERN SYNTHESIS:")
+        prompt_parts.append("Before solving, identify:")
+        prompt_parts.append("• What patterns do you see across examples?")
+        prompt_parts.append("• What strategies consistently work?")
+        prompt_parts.append("• What common mistakes should you avoid?")
+        prompt_parts.append("")
+
+        # Add current problem with guided application
+        prompt_parts.append("YOUR PROBLEM:")
         prompt_parts.append(f"Problem: {current_problem}")
+        prompt_parts.append("")
+        prompt_parts.append("GUIDED SOLUTION:")
+        prompt_parts.append("1. Pattern Recognition: Which examples are most similar to this problem?")
+        prompt_parts.append("2. Strategy Selection: Which approach from the examples should you use?")
+        prompt_parts.append("3. Adaptation: How do you modify the pattern for this specific problem?")
+        prompt_parts.append("4. Execution: Apply the adapted strategy step-by-step")
+        prompt_parts.append("5. Verification: Check your solution against the example patterns")
+        prompt_parts.append("")
         prompt_parts.append("Solution:")
 
         return "\n".join(prompt_parts)
@@ -300,44 +688,78 @@ Confidence in conclusion: {confidence}
         context: dict[str, Any],
         strategy: ReasoningStrategy = ReasoningStrategy.CHAIN_OF_THOUGHT
     ) -> str:
-        """Create a contextual prompt with background information."""
+        """Create research-enhanced contextual prompt with strategic guidance."""
 
         prompt_parts = []
+        
+        # Add enhanced context framework
+        prompt_parts.append("CONTEXTUAL PROBLEM SOLVING FRAMEWORK:")
+        prompt_parts.append("")
 
-        # Add context information
+        # Add structured context information
         if context.get('background'):
-            prompt_parts.append("Background:")
+            prompt_parts.append("BACKGROUND CONTEXT:")
             prompt_parts.append(context['background'])
             prompt_parts.append("")
 
         if context.get('constraints'):
-            prompt_parts.append("Constraints:")
+            prompt_parts.append("CONSTRAINTS & LIMITATIONS:")
             for constraint in context['constraints']:
-                prompt_parts.append(f"- {constraint}")
+                prompt_parts.append(f"• {constraint}")
             prompt_parts.append("")
 
         if context.get('requirements'):
-            prompt_parts.append("Requirements:")
+            prompt_parts.append("SUCCESS CRITERIA:")
             for req in context['requirements']:
-                prompt_parts.append(f"- {req}")
+                prompt_parts.append(f"• {req}")
             prompt_parts.append("")
-
-        # Add the problem
-        prompt_parts.append("Problem:")
+            
+        # Add problem with complexity analysis
+        prompt_parts.append("PROBLEM STATEMENT:")
         prompt_parts.append(problem)
         prompt_parts.append("")
-
-        # Add strategy-specific instruction
-        strategy_instruction = {
-            ReasoningStrategy.CHAIN_OF_THOUGHT: "Please solve this step by step, showing your reasoning clearly.",
-            ReasoningStrategy.TREE_OF_THOUGHTS: "Please explore multiple approaches before selecting the best solution.",
-            ReasoningStrategy.SELF_ASK: "Please break this down into sub-questions and answer them systematically.",
-            ReasoningStrategy.MONTE_CARLO_TREE_SEARCH: "Please systematically explore the solution space.",
-            ReasoningStrategy.REFLEXION: "Please solve this, then reflect on your approach and improve if needed."
+        
+        # Add strategic guidance based on research
+        strategy_guidance = {
+            ReasoningStrategy.CHAIN_OF_THOUGHT: 
+                "STRATEGY: Chain-of-Thought Reasoning\n"
+                "Research shows 17.9% accuracy improvement with systematic step-by-step analysis.\n"
+                "Execute: Plan → Step-by-step → Verify → Conclude",
+            
+            ReasoningStrategy.TREE_OF_THOUGHTS:
+                "STRATEGY: Tree-of-Thoughts Exploration\n"
+                "Research shows 70% improvement in complex problem-solving through multi-path exploration.\n"
+                "Execute: Generate approaches → Evaluate options → Select best → Execute with backtracking",
+            
+            ReasoningStrategy.SELF_ASK:
+                "STRATEGY: Self-Ask Decomposition\n"
+                "Research shows complex questions benefit from systematic sub-question breakdown.\n"
+                "Execute: Decompose → Prioritize → Answer systematically → Synthesize",
+            
+            ReasoningStrategy.MONTE_CARLO_TREE_SEARCH:
+                "STRATEGY: Monte Carlo Tree Search\n"
+                "Research shows 53% AIME performance (top 20% human level) through systematic exploration.\n"
+                "Execute: Model search space → Explore branches → Evaluate quality → Optimize path",
+            
+            ReasoningStrategy.REFLEXION:
+                "STRATEGY: Reflexion Methodology\n"
+                "Research shows 91% coding success vs 80% single-pass through iterative improvement.\n"
+                "Execute: Attempt → Evaluate → Diagnose → Learn → Improve → Retry"
         }
 
-        instruction = strategy_instruction.get(strategy, "Please solve this problem systematically.")
-        prompt_parts.append(instruction)
+        guidance = strategy_guidance.get(strategy, "STRATEGY: Systematic Problem Solving\nExecute with careful analysis and verification.")
+        prompt_parts.append(guidance)
+        prompt_parts.append("")
+        
+        # Add context-aware verification
+        prompt_parts.append("CONTEXT-AWARE VERIFICATION:")
+        prompt_parts.append("• Does solution satisfy all constraints?")
+        prompt_parts.append("• Are requirements fully addressed?")
+        prompt_parts.append("• Is solution appropriate for given context?")
+        prompt_parts.append("• Are there context-specific considerations missed?")
+        prompt_parts.append("")
+        
+        prompt_parts.append("Begin solving with the specified strategy:")
 
         return "\n".join(prompt_parts)
 
@@ -348,23 +770,90 @@ Confidence in conclusion: {confidence}
         criteria: list[str],
         problem: str | None = None
     ) -> str:
-        """Create a prompt for evaluating a solution."""
+        """Create comprehensive evaluation prompt with research-backed assessment framework."""
 
         prompt_parts = []
+        
+        # Add evaluation framework header
+        prompt_parts.append("SOLUTION EVALUATION FRAMEWORK:")
+        prompt_parts.append("Based on research in solution quality assessment and verification methodologies.")
+        prompt_parts.append("")
 
         if problem:
-            prompt_parts.append(f"Original Problem: {problem}")
+            prompt_parts.append("ORIGINAL PROBLEM:")
+            prompt_parts.append(problem)
             prompt_parts.append("")
 
-        prompt_parts.append(f"Solution to Evaluate: {solution}")
+        prompt_parts.append("SOLUTION UNDER EVALUATION:")
+        prompt_parts.append(solution)
         prompt_parts.append("")
-        prompt_parts.append("Please evaluate this solution based on the following criteria:")
-
+        
+        # Add multi-dimensional evaluation criteria
+        prompt_parts.append("EVALUATION DIMENSIONS:")
+        prompt_parts.append("")
+        
+        # Core evaluation criteria
+        prompt_parts.append("CORE CRITERIA:")
         for criterion in criteria:
-            prompt_parts.append(f"- {criterion}")
-
+            prompt_parts.append(f"• {criterion}")
         prompt_parts.append("")
-        prompt_parts.append("Provide a detailed evaluation and a confidence score from 0-10.")
+        
+        # Research-backed evaluation framework
+        prompt_parts.append("SYSTEMATIC ASSESSMENT:")
+        prompt_parts.append("")
+        
+        prompt_parts.append("1. CORRECTNESS ANALYSIS:")
+        prompt_parts.append("   • Logical validity: Are the reasoning steps sound?")
+        prompt_parts.append("   • Factual accuracy: Are all facts and calculations correct?")
+        prompt_parts.append("   • Completeness: Does it fully address the problem?")
+        prompt_parts.append("   • Score: ___/10")
+        prompt_parts.append("")
+        
+        prompt_parts.append("2. REASONING QUALITY:")
+        prompt_parts.append("   • Clarity: Is the reasoning easy to follow?")
+        prompt_parts.append("   • Depth: Are all necessary steps included?")
+        prompt_parts.append("   • Consistency: Are all parts logically coherent?")
+        prompt_parts.append("   • Score: ___/10")
+        prompt_parts.append("")
+        
+        prompt_parts.append("3. METHODOLOGY:")
+        prompt_parts.append("   • Approach appropriateness: Was the right strategy used?")
+        prompt_parts.append("   • Efficiency: Could it be solved more directly?")
+        prompt_parts.append("   • Robustness: Does it handle edge cases?")
+        prompt_parts.append("   • Score: ___/10")
+        prompt_parts.append("")
+        
+        prompt_parts.append("4. VERIFICATION & VALIDATION:")
+        prompt_parts.append("   • Self-checking: Are verification steps included?")
+        prompt_parts.append("   • Alternative validation: Can it be verified another way?")
+        prompt_parts.append("   • Error detection: Are potential errors identified?")
+        prompt_parts.append("   • Score: ___/10")
+        prompt_parts.append("")
+        
+        prompt_parts.append("5. PRESENTATION & COMMUNICATION:")
+        prompt_parts.append("   • Organization: Is it well-structured?")
+        prompt_parts.append("   • Clarity: Is it easy to understand?")
+        prompt_parts.append("   • Completeness: Are all steps documented?")
+        prompt_parts.append("   • Score: ___/10")
+        prompt_parts.append("")
+        
+        # Add improvement recommendations
+        prompt_parts.append("IMPROVEMENT ANALYSIS:")
+        prompt_parts.append("• Strengths: What works well?")
+        prompt_parts.append("• Weaknesses: What needs improvement?")
+        prompt_parts.append("• Specific recommendations: How to enhance the solution?")
+        prompt_parts.append("• Alternative approaches: What other methods might work?")
+        prompt_parts.append("")
+        
+        # Add confidence assessment
+        prompt_parts.append("CONFIDENCE ASSESSMENT:")
+        prompt_parts.append("• Overall quality score: ___/10")
+        prompt_parts.append("• Confidence in evaluation: ___/10")
+        prompt_parts.append("• Key uncertainties: What aspects are unclear?")
+        prompt_parts.append("• Recommended next steps: What should be done to improve?")
+        prompt_parts.append("")
+        
+        prompt_parts.append("Please provide a comprehensive evaluation following this framework.")
 
         return "\n".join(prompt_parts)
 

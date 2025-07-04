@@ -95,4 +95,4 @@ evaluation_logs/
 
 # Streamlit
 .streamlit/
-EOF < /dev/null
+benchmark_results/

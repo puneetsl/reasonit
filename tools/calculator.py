@@ -200,6 +200,37 @@ class CalculatorTool(BaseTool):
         super().__init__("calculator", ToolType.CALCULATOR, config)
 
         self.evaluator = SafeMathEvaluator()
+    
+    def _clean_expression(self, expression: str) -> str:
+        """Clean and normalize mathematical expressions."""
+        # Remove line continuation characters and normalize whitespace
+        expression = expression.replace('\\', ' ').replace('\n', ' ').replace('\r', ' ')
+        
+        # Replace multiple spaces with single space
+        import re
+        expression = re.sub(r'\s+', ' ', expression)
+        
+        # Remove common text artifacts that might interfere
+        # Remove quotes that might wrap expressions
+        expression = expression.strip('\'"')
+        
+        # Handle common mathematical notation fixes
+        replacements = {
+            ' x ': ' * ',  # Replace 'x' with '*' for multiplication
+            '×': '*',      # Replace multiplication symbol
+            '÷': '/',      # Replace division symbol
+            '−': '-',      # Replace minus sign
+            '–': '-',      # Replace en-dash
+            '—': '-',      # Replace em-dash
+        }
+        
+        for old, new in replacements.items():
+            expression = expression.replace(old, new)
+        
+        # Remove any remaining non-ASCII mathematical characters that might cause issues
+        expression = re.sub(r'[^\x00-\x7F]+', '', expression)
+        
+        return expression.strip()
 
     async def _execute(
         self,
@@ -216,8 +247,15 @@ class CalculatorTool(BaseTool):
         if not expression.strip():
             raise ValueError("Expression cannot be empty")
 
+        # Store original expression for debugging
+        original_expression = expression
+        
         # Clean and validate expression
-        expression = expression.strip()
+        expression = self._clean_expression(expression)
+        
+        # Log cleaning for debugging if there was a significant change
+        if expression != original_expression.strip():
+            logger.debug(f"Expression cleaned: {repr(original_expression)} -> {repr(expression)}")
 
         # Check for dangerous patterns
         dangerous_patterns = ['import', '__', 'exec', 'eval', 'open', 'file']
@@ -253,7 +291,9 @@ class CalculatorTool(BaseTool):
             }
 
         except Exception as e:
-            raise ToolExecutionError(f"Calculation failed: {e}", "calculator", {"expression": expression})
+            # Log the problematic expression for debugging
+            logger.warning(f"Calculator failed on expression: {repr(expression)} - Error: {e}")
+            raise ToolExecutionError(f"Calculation failed: {e}", "calculator", {"expression": expression, "original_expression": original_expression})
 
     def get_metadata(self) -> ToolMetadata:
         """Get metadata for the calculator tool."""

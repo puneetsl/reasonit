@@ -27,7 +27,11 @@
       "Bash(rm:*)",
       "Bash(PYTHONPATH=/Users/puneetl/Development/per/reasonit poetry run python -c \"\nimport logging\nlogging.basicConfig(level=logging.DEBUG)\nimport asyncio\nfrom reasonit import main_async\nasyncio.run(main_async([''query'', ''Explain quantum computing'']))\n\")",
       "Bash(LOGLEVEL=INFO poetry run python reasonit.py query \"Explain quantum computing\")",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(chmod:*)",
+      "Bash(poetry add:*)",
+      "Bash(poetry update:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

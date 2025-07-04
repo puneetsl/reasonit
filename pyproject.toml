@@ -35,6 +35,8 @@ requests = "^2.32.0"
 numpy = "^1.26.0"
 pandas = "^2.2.0"
 scipy = "^1.13.0"
+matplotlib = "^3.9.0"
+seaborn = "^0.13.0"
 
 # JSON and serialization
 orjson = "^3.10.0"
