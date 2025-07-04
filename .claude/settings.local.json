@@ -16,7 +16,18 @@
       "Bash(python:*)",
       "Bash(python -m pytest:*)",
       "Bash(python3 -m pytest:*)",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(for dir in agents controllers context models tools reflection proofs planning tests)",
+      "Bash(do [ -d \"/Users/puneetl/Development/per/reasonit/$dir\" ])",
+      "Bash(echo \"✓ $dir exists\")",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Bash(poetry install:*)",
+      "Bash(poetry run:*)",
+      "Bash(rm:*)",
+      "Bash(PYTHONPATH=/Users/puneetl/Development/per/reasonit poetry run python -c \"\nimport logging\nlogging.basicConfig(level=logging.DEBUG)\nimport asyncio\nfrom reasonit import main_async\nasyncio.run(main_async([''query'', ''Explain quantum computing'']))\n\")",
+      "Bash(LOGLEVEL=INFO poetry run python reasonit.py query \"Explain quantum computing\")",
+      "Bash(pkill:*)"
     ],
     "deny": []
   }

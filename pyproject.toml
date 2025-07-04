@@ -1,0 +1,189 @@
+[tool.poetry]
+name = "reasonit"
+version = "0.1.0"
+description = "LLM-based reasoning architecture that matches GPT-4 performance using orchestrated smaller models"
+authors = ["ReasonIt Team <team@reasonit.ai>"]
+readme = "README.md"
+packages = [
+    {include = "agents"},
+    {include = "controllers"},
+    {include = "models"},
+    {include = "tools"},
+    {include = "context"},
+    {include = "reflection"},
+    {include = "planning"},
+    {include = "proofs"},
+    {include = "benchmarks"},
+    {include = "config"},
+    {include = "examples"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# Core LLM and AI frameworks
+pydantic = "^2.8.0"
+pydantic-ai = "^0.0.14"
+openai = "^1.50.0"
+anthropic = "^0.40.0"
+
+# Async HTTP and networking
+httpx = "^0.27.0"
+aiohttp = "^3.10.0"
+requests = "^2.32.0"
+
+# Data processing and utilities
+numpy = "^1.26.0"
+pandas = "^2.2.0"
+scipy = "^1.13.0"
+
+# JSON and serialization
+orjson = "^3.10.0"
+
+# Logging and monitoring
+loguru = "^0.7.0"
+rich = "^13.7.0"
+
+# Environment and configuration
+python-dotenv = "^1.0.0"
+
+# Search and knowledge integration
+duckduckgo-search = "^6.2.0"
+
+# Math and scientific computing
+sympy = "^1.12.0"
+
+# CLI and UI (optional)
+click = "^8.1.0"
+typer = "^0.12.0"
+streamlit = {version = "^1.38.0", optional = true}
+
+# API framework (optional)
+fastapi = {version = "^0.115.0", optional = true}
+uvicorn = {version = "^0.30.0", optional = true}
+
+[tool.poetry.group.dev.dependencies]
+# Testing
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+pytest-cov = "^5.0.0"
+pytest-mock = "^3.14.0"
+
+# Code quality
+ruff = "^0.6.0"
+mypy = "^1.11.0"
+black = "^24.8.0"
+
+# Type stubs
+types-requests = "^2.32.0"
+
+# Development utilities
+ipython = "^8.26.0"
+jupyter = "^1.1.0"
+
+[tool.poetry.extras]
+ui = ["streamlit"]
+api = ["fastapi", "uvicorn"]
+full = ["streamlit", "fastapi", "uvicorn"]
+
+[tool.poetry.scripts]
+reasonit = "reasonit:main"
+reasonit-cli = "cli:main"
+reasonit-api = "api_server:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "ARG", # flake8-unused-arguments
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+    "ARG002", # unused method argument
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+no_implicit_reexport = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = [
+    "duckduckgo_search.*",
+    "pydantic_ai.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=.",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "benchmark: marks tests as benchmark tests",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests/*",
+    "examples/*",
+    "benchmarks/*",
+    ".venv/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
