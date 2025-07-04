@@ -270,7 +270,7 @@ Guidelines:
             self.add_reasoning_step(
                 content=f"Path {path_id}: {len(steps)} steps, confidence={path_confidence:.3f}",
                 confidence=path_confidence,
-                cost=0.01,  # Estimated cost per path
+                cost=0.0,  # Cost already tracked in LLM generation steps
                 tools_used=tool_results,
                 intermediate_result=final_answer,
                 metadata={"path_id": path_id, "step_count": len(steps)}
@@ -717,7 +717,7 @@ Guidelines:
                         self.add_reasoning_step(
                             content=f"Verified final answer {answer_value} with mathematical validation",
                             confidence=verification_data.get("confidence", 0.9),
-                            cost=0.001,
+                            cost=0.0,  # Tool costs are tracked separately
                             tools_used=[verification],
                             metadata={"verification_result": verification_data}
                         )

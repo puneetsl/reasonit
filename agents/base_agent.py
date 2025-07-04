@@ -295,16 +295,30 @@ class BaseReasoningAgent(ABC):
         )
 
     def _calculate_total_cost(self) -> float:
-        """Calculate total cost from reasoning trace and LLM wrapper."""
+        """Calculate total cost from reasoning trace and LLM wrapper.
+        
+        Note: We use trace cost as the source of truth to avoid double-counting
+        in multi-path reasoning strategies.
+        """
         trace_cost = sum(step.cost for step in self.reasoning_trace)
+        
+        # Debug logging
         wrapper_cost = 0.0
-
         if self.current_session_id:
             wrapper_cost = self.llm_wrapper.cost_tracker.get_session_cost(
                 self.current_session_id
             )
-
-        return max(trace_cost, wrapper_cost)
+        
+        logger.debug(f"Cost calculation - Trace: ${trace_cost:.6f}, Wrapper: ${wrapper_cost:.6f}")
+        logger.debug(f"Reasoning steps: {len(self.reasoning_trace)}")
+        
+        # If no costs tracked in trace, fall back to wrapper cost
+        if trace_cost == 0:
+            logger.debug("Using wrapper cost (no trace costs)")
+            return wrapper_cost
+        
+        logger.debug(f"Using trace cost: ${trace_cost:.6f}")
+        return trace_cost
 
     def add_reasoning_step(
         self,
@@ -363,6 +377,7 @@ class BaseReasoningAgent(ABC):
             # Track usage in reasoning step
             usage = self.llm_wrapper.get_usage_metrics()
             if usage:
+                logger.debug(f"Usage metrics - Cost: ${usage.cost:.6f}, Tokens: {usage.total_tokens}")
                 self.add_reasoning_step(
                     content=f"LLM Generation: {enhanced_prompt[:100]}...",
                     confidence=0.8,  # Default confidence for generation
