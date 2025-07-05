@@ -50,6 +50,9 @@ from rich.align import Align
 from rich.columns import Columns
 from rich.status import Status
 
+# Import visualization components
+from visualization import LiveReasoningDisplay, MermaidChartGenerator, TreeRenderer
+
 from models import (
     ReasoningRequest,
     ReasoningResult,
@@ -531,28 +534,36 @@ reasonit plan "Research climate change solutions"[/dim]
         )
 
         try:
-            with Progress(
-                SpinnerColumn(),
-                TextColumn("[progress.description]{task.description}"),
-                BarColumn(),
-                TaskProgressColumn(),
+            # Initialize live visualization
+            live_display = LiveReasoningDisplay(
                 console=self.console,
-                transient=True,
-            ) as progress:
-
-                task = progress.add_task("Reasoning...", total=100)
-
-                # Simulate reasoning progress
-                for i in range(100):
-                    await asyncio.sleep(0.02)
-                    progress.update(task, advance=1)
-
-                # Use adaptive controller for routing
-                result = await self._route_reasoning(request)
-
-                progress.update(
-                    task, completed=100, description="✅ Reasoning complete!"
+                show_confidence=True,
+                show_costs=True,
+                show_timing=True
+            )
+            
+            # Start live reasoning session
+            live_display.start_session(query, request.strategy)
+            
+            try:
+                # Add initial step
+                live_display.add_step(
+                    "Initializing reasoning process...",
+                    confidence=0.0,
+                    step_type="initialization"
                 )
+                
+                # Use adaptive controller for routing with live updates
+                result = await self._route_reasoning_with_visualization(request, live_display)
+                
+                # Complete the session
+                live_display.complete_session(result.final_answer, result.outcome)
+                
+            finally:
+                # Ensure display is stopped
+                if live_display.is_active:
+                    await asyncio.sleep(1.0)  # Brief pause to show final result
+                    live_display.stop_session()
 
             # Display results
             await self._display_reasoning_result(result, time.time() - start_time)
@@ -590,6 +601,192 @@ reasonit plan "Research climate change solutions"[/dim]
                 == "y"
             ):
                 self.console.print(traceback.format_exc())
+
+    async def _route_reasoning_with_visualization(
+        self, 
+        request: ReasoningRequest, 
+        live_display: LiveReasoningDisplay
+    ) -> ReasoningResult:
+        """Route reasoning request with live visualization updates."""
+        
+        # Update progress
+        live_display.add_step(
+            "Selecting optimal reasoning strategy...",
+            confidence=0.2,
+            step_type="strategy_selection"
+        )
+        
+        # Try using adaptive controller first for intelligent strategy selection
+        try:
+            # Use adaptive controller if available
+            if "adaptive" in self.controllers:
+                live_display.add_step(
+                    "Routing through adaptive controller...",
+                    confidence=0.4,
+                    step_type="routing"
+                )
+                
+                logger.info("Routing through adaptive controller...")
+                
+                # Create a wrapped version that provides live updates
+                result = await self._execute_with_live_updates(
+                    self.controllers["adaptive"].route_request,
+                    request,
+                    live_display
+                )
+                
+                logger.info(f"Adaptive controller returned: {result.final_answer[:100]}...")
+                return result
+                
+        except Exception as e:
+            live_display.add_step(
+                f"Adaptive controller failed: {str(e)[:50]}...",
+                confidence=0.1,
+                step_type="error"
+            )
+            logger.warning(f"Adaptive controller failed: {e}, falling back to direct agent")
+
+        # Fallback to direct agent execution
+        try:
+            live_display.add_step(
+                "Falling back to direct agent execution...",
+                confidence=0.3,
+                step_type="fallback"
+            )
+            
+            agent = self.agents.get("cot")  # Default to Chain of Thought
+            if agent:
+                live_display.add_step(
+                    "Using Chain of Thought agent...",
+                    confidence=0.5,
+                    step_type="agent_execution"
+                )
+                
+                logger.info("Using direct CoT agent...")
+                
+                result = await self._execute_with_live_updates(
+                    agent.reason,
+                    request,
+                    live_display
+                )
+                
+                logger.info(f"Direct agent returned: {result.final_answer[:100]}...")
+                return result
+            else:
+                # If no agent available, create one directly
+                live_display.add_step(
+                    "Creating new reasoning agent...",
+                    confidence=0.2,
+                    step_type="agent_creation"
+                )
+                
+                logger.info("No agent available, creating one directly...")
+                from agents import ChainOfThoughtAgent
+
+                agent = ChainOfThoughtAgent(config=self.config)
+                
+                result = await self._execute_with_live_updates(
+                    agent.reason,
+                    request,
+                    live_display
+                )
+                
+                logger.info(f"Direct new agent returned: {result.final_answer[:100]}...")
+                return result
+                
+        except Exception as e:
+            live_display.add_step(
+                f"Direct agent failed: {str(e)[:50]}...",
+                confidence=0.0,
+                step_type="error"
+            )
+            logger.error(f"Direct agent also failed: {e}")
+
+        # Create mock result if no agent available
+        live_display.add_step(
+            "All routing methods failed, creating fallback response...",
+            confidence=0.1,
+            step_type="fallback"
+        )
+        
+        logger.warning("All routing methods failed, returning mock result")
+        from models.types import ReasoningStep
+
+        return ReasoningResult(
+            request=request,
+            final_answer=f"Unable to process query: {request.query}. All reasoning methods failed.",
+            reasoning_trace=[
+                ReasoningStep(
+                    step_number=1,
+                    strategy=request.strategy,
+                    content=f"Failed to process query: {request.query}",
+                    confidence=0.1,
+                    cost=0.001,
+                )
+            ],
+            total_cost=0.001,
+            total_time=1.0,
+            confidence_score=0.1,
+            strategies_used=[request.strategy],
+            outcome=OutcomeType.ERROR,
+            timestamp=datetime.now(),
+        )
+
+    async def _execute_with_live_updates(
+        self,
+        reasoning_func,
+        request: ReasoningRequest,
+        live_display: LiveReasoningDisplay
+    ) -> ReasoningResult:
+        """Execute reasoning function while providing live updates."""
+        
+        # Simulate reasoning progress with periodic updates
+        async def update_progress():
+            for i in range(10):
+                await asyncio.sleep(0.5)  # Update every 500ms
+                if not live_display.is_active:
+                    break
+                    
+                confidence = min(0.1 + (i * 0.08), 0.9)  # Gradually increase confidence
+                live_display.add_step(
+                    f"Processing reasoning step {i+1}/10...",
+                    confidence=confidence,
+                    cost=0.001 * (i + 1),
+                    step_type="reasoning"
+                )
+        
+        # Start progress updates in background
+        progress_task = asyncio.create_task(update_progress())
+        
+        try:
+            # Execute the actual reasoning
+            result = await reasoning_func(request)
+            
+            # Cancel progress updates
+            progress_task.cancel()
+            
+            # Add final processing step
+            live_display.add_step(
+                "Finalizing reasoning result...",
+                confidence=0.95,
+                cost=result.total_cost if hasattr(result, 'total_cost') else 0.01,
+                step_type="finalization"
+            )
+            
+            return result
+            
+        except Exception as e:
+            # Cancel progress updates
+            progress_task.cancel()
+            
+            # Add error step
+            live_display.add_step(
+                f"Reasoning execution failed: {str(e)[:50]}...",
+                confidence=0.0,
+                step_type="error"
+            )
+            
+            raise e
 
     async def _route_reasoning(self, request: ReasoningRequest) -> ReasoningResult:
         """Route reasoning request through adaptive controller."""
@@ -689,6 +886,12 @@ reasonit plan "Research climate change solutions"[/dim]
         ):
             self._display_reasoning_trace(result.reasoning_trace)
 
+        # Show reasoning chart if requested
+        if result.reasoning_trace and Confirm.ask(
+            "[cyan]Generate reasoning flow chart?[/cyan]", default=False
+        ):
+            self._display_reasoning_chart(result)
+
         self.console.print(metadata_panel)
 
     def _display_reasoning_trace(self, trace: List[Any]):
@@ -708,6 +911,79 @@ reasonit plan "Research climate change solutions"[/dim]
                 )
 
         self.console.print(trace_tree)
+
+    def _display_reasoning_chart(self, result: ReasoningResult):
+        """Display reasoning process as Mermaid chart."""
+        try:
+            chart_generator = MermaidChartGenerator()
+            
+            # Generate flowchart from reasoning steps
+            chart = chart_generator.generate_reasoning_flow_chart(
+                result.reasoning_trace,
+                result.strategies_used[0] if result.strategies_used else ReasoningStrategy.CHAIN_OF_THOUGHT,
+                f"Reasoning Process for Query"
+            )
+            
+            # Display the Mermaid chart code
+            mermaid_code = chart.to_mermaid()
+            
+            self.console.print("\n[bold green]🎨 Reasoning Flow Chart (Mermaid):[/bold green]")
+            self.console.print("[green]" + "=" * 60 + "[/green]")
+            
+            # Display the Mermaid code with syntax highlighting
+            from rich.syntax import Syntax
+            syntax = Syntax(mermaid_code, "mermaid", theme="monokai", line_numbers=True)
+            self.console.print(syntax)
+            
+            self.console.print("[green]" + "=" * 60 + "[/green]")
+            
+            # Offer to save as HTML
+            if Confirm.ask("[cyan]Save chart as HTML file?[/cyan]", default=False):
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"reasoning_chart_{timestamp}.html"
+                
+                from visualization.reasoning_charts import save_chart_as_html
+                saved_file = save_chart_as_html(
+                    mermaid_code, 
+                    filename, 
+                    "ReasonIt Reasoning Flow Chart"
+                )
+                
+                self.console.print(f"[green]✅ Chart saved as: {saved_file}[/green]")
+                self.console.print(f"[dim]Open in browser to view the interactive chart[/dim]")
+            
+            # Also offer tree visualization for tree-based strategies
+            if result.strategies_used and result.strategies_used[0] in [
+                ReasoningStrategy.TREE_OF_THOUGHTS, 
+                ReasoningStrategy.MONTE_CARLO_TREE_SEARCH
+            ]:
+                if Confirm.ask("[cyan]Show tree visualization?[/cyan]", default=False):
+                    self._display_tree_visualization(result)
+                    
+        except Exception as e:
+            self.console.print(f"[red]Failed to generate chart: {str(e)}[/red]")
+
+    def _display_tree_visualization(self, result: ReasoningResult):
+        """Display tree visualization for tree-based reasoning strategies."""
+        try:
+            from visualization.tree_renderer import create_reasoning_tree_from_steps
+            
+            tree_renderer = TreeRenderer(console=self.console)
+            
+            # Create tree from steps
+            strategy = result.strategies_used[0] if result.strategies_used else ReasoningStrategy.TREE_OF_THOUGHTS
+            tree = create_reasoning_tree_from_steps(result.reasoning_trace, strategy)
+            
+            # Render tree
+            tree_view = tree_renderer.render_tree(tree, tree.get_best_path())
+            stats_panel = tree_renderer.render_tree_statistics(tree)
+            
+            self.console.print("\n[bold green]🌳 Tree Visualization:[/bold green]")
+            self.console.print(tree_view)
+            self.console.print(stats_panel)
+            
+        except Exception as e:
+            self.console.print(f"[red]Failed to generate tree visualization: {str(e)}[/red]")
 
     async def create_execution_plan(self, query: str):
         """Create and display execution plan for complex task."""

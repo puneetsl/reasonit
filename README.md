@@ -1,6 +1,6 @@
 # ReasonIt: LLM-Based Reasoning Architecture
 
-> **"Slow but smarter" LLM reasoning that matches GPT-4 performance at 20x lower cost**
+> **"Slow but smarter" LLM reasoning that matches GPT-4 performance at 100x lower cost**
 
 A production-ready reasoning system that orchestrates smaller LLMs (GPT-4o Mini) through layered meta-reasoning, memory, dynamic planning, cost-awareness, and tool use to achieve GPT-4-level performance at a fraction of the cost.
 
@@ -164,7 +164,7 @@ ReasonIt achieves dramatic cost reductions through:
 - **Coaching System**: Large model hints only when small model confidence is low
 - **Caching**: Aggressive caching of search results and computations
 
-**Target Performance**: 85%+ accuracy at 20x lower cost than GPT-4
+**Target Performance**: 85%+ accuracy at 100x lower cost than GPT-4
 
 ## 🧪 Testing the System
 

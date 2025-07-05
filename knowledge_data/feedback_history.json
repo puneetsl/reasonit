@@ -1,0 +1,38 @@
+[
+  {
+    "query": "This statement is false",
+    "primary_pattern": "logical_paradox",
+    "framework_used": "standard",
+    "success_rating": 0.9,
+    "guidance_confidence": 0.23333333333333334,
+    "notes": "Paradox resolution worked well",
+    "timestamp": "/Users/puneetl/Development/per/reasonit"
+  },
+  {
+    "query": "Birthday paradox problem",
+    "primary_pattern": "normal",
+    "framework_used": "standard",
+    "success_rating": 0.8,
+    "guidance_confidence": 1.0,
+    "notes": "Counterintuitive guidance helpful",
+    "timestamp": "/Users/puneetl/Development/per/reasonit"
+  },
+  {
+    "query": "Simple math problem",
+    "primary_pattern": "normal",
+    "framework_used": "standard",
+    "success_rating": 0.6,
+    "guidance_confidence": 1.0,
+    "notes": "Over-complicated for simple problem",
+    "timestamp": "/Users/puneetl/Development/per/reasonit"
+  },
+  {
+    "query": "Complex logical deduction",
+    "primary_pattern": "normal",
+    "framework_used": "standard",
+    "success_rating": 0.9,
+    "guidance_confidence": 1.0,
+    "notes": "Formal logic framework perfect",
+    "timestamp": "/Users/puneetl/Development/per/reasonit"
+  }
+]
